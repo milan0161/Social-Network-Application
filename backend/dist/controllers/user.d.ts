@@ -1,0 +1,10 @@
+import { Request, Response, NextFunction } from 'express';
+declare const addInformations: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const updateInformations: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const getUserInformations: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const getSingleUser: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const getAllUnfollowed: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const getFollowers: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const getFollowing: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const getAllUsers: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export { addInformations, updateInformations, getSingleUser, getAllUnfollowed, getFollowers, getFollowing, getAllUsers, getUserInformations, };

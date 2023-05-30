@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URI")
+}
+
+model User{
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstname String 
+  lastname String
+  email String @unique
+  password String
+  information Information?
+
+  mainImage String?
+  allImages Image[]
+
+  posts Post[]
+  comments Comment[]
+
+  following User[] @relation("UserFollows")
+  followedBy User[] @relation("UserFollows")
+
+  chat Chat[] @relation("chat")
+
+
+  sentMessages     Message[] @relation("sentMessages")
+  receivedMessages Message[] @relation("receivedMessages")
+
+}
+
+
+model Chat{
+  id String @id @default(uuid())
+
+  users User [] @relation("chat")
+
+  messages Message[]
+
+}
+
+
+model Message{
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  chatId String
+
+  sender     User   @relation(name: "sentMessages", fields: [senderId], references: [id])
+  receiver   User   @relation(name: "receivedMessages", fields: [receiverId], references: [id])
+  senderId   String
+  receiverId String
+
+}
+
+model Image{
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  path String
+
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+
+  post Post @relation(fields: [postId], references: [id])
+  postId String
+
+}
+
+model Post{
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+
+  comments Comment[]
+  image Image[]
+
+}
+
+model Comment{
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+  
+  post Post @relation(fields: [postId], references: [id])
+  postId String
+}
+
+
+
+model Information{
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  upadtedAt DateTime @updatedAt
+
+  city String?
+  placeOfBirth String?
+  dateOfBirth DateTime?
+  age Int?
+  employed Boolean?
+  workPlace String?
+  phoneNumber Int?
+
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
+  
+  
+}
+
+

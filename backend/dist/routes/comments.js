@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const isAuth_1 = require("../middleware/isAuth");
+const validation_middleware_1 = require("../middleware/validation-middleware");
+const express_validator_1 = require("express-validator");
+const comments_1 = require("../controllers/comments");
+const router = (0, express_1.Router)();
+router.post('/create-comment/:postId', [(0, express_validator_1.body)('content', 'Content must be provided').isString().not().isEmpty()], isAuth_1.isAuth, validation_middleware_1.validationMiddleware, comments_1.createComment);
+router.patch('/edit-comment/:id', [(0, express_validator_1.body)('content', 'Content must be provided').isString().not().isEmpty()], isAuth_1.isAuth, validation_middleware_1.validationMiddleware, comments_1.editComment);
+exports.default = router;

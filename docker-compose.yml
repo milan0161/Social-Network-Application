@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: socialnetwork123
+      POSTGRES_DB: SocialNetwork
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - socialnetwork
+
+  backend:
+    build: ./backend
+    image: backend-api:1
+    ports:
+      - 7000:7000
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=socialnetwork123
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_NAME=SocialNetwork
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      - socialnetwork
+
+networks:
+  socialnetwork:
+    driver: bridge
+
+volumes:
+  postgres:
+  mongodb:
