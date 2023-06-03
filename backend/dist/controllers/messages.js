@@ -32,7 +32,10 @@ const sendMessage = async (req, res, next) => {
                     receiverId: recivierId,
                 },
                 select: {
+                    chatId: true,
                     content: true,
+                    createdAt: true,
+                    receiverId: true,
                     sender: {
                         select: {
                             id: true,
@@ -44,38 +47,8 @@ const sendMessage = async (req, res, next) => {
                     id: true,
                 },
             });
-            // const newMessage = await prisma.chat.update({
-            //   where: {
-            //     id: findChat.id,
-            //   },
-            //   data: {
-            //     messages: {
-            //       create: {
-            //         content: content,
-            //         senderId: senderId,
-            //         receiverId: recivierId,
-            //       },
-            //     },
-            //   },
-            //   select: {
-            //     messages: {
-            //       take: 1,
-            //       select: {
-            //         id: true,
-            //         sender: {
-            //           select: {
-            //             id: true,
-            //             firstname: true,
-            //             lastname: true,
-            //             mainImage: true,
-            //           },
-            //         },
-            //         content: true,
-            //       },
-            //     },
-            //   },
-            // });
-            (0, socket_1.getIO)().emit('messages', {
+            const chatRoom = newMessage.receiverId.concat(newMessage.sender.id);
+            (0, socket_1.getIO)().emit(`${chatRoom}`, {
                 action: 'sent',
                 message: newMessage,
             });
@@ -95,10 +68,13 @@ const sendMessage = async (req, res, next) => {
                     },
                 },
                 select: {
+                    id: true,
                     messages: {
                         take: 1,
                         select: {
                             id: true,
+                            createdAt: true,
+                            receiverId: true,
                             sender: {
                                 select: {
                                     id: true,
@@ -112,10 +88,15 @@ const sendMessage = async (req, res, next) => {
                     },
                 },
             });
-            (0, socket_1.getIO)().emit('messages', {
+            const chatRoom = newChat.messages[0].receiverId.concat(newChat.messages[0].sender.id);
+            (0, socket_1.getIO)().emit(`${chatRoom}`, {
                 action: 'sent',
                 message: newChat.messages[0],
             });
+            // getIO().emit('messages', {
+            //   action: 'sent',
+            //   message: newChat.messages[0],
+            // });
         }
         res.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Message has been sent' });
     }
@@ -139,6 +120,7 @@ const getChat = async (req, res, next) => {
                 },
             },
             select: {
+                id: true,
                 messages: {
                     select: {
                         id: true,
@@ -161,6 +143,7 @@ const getChat = async (req, res, next) => {
         if (chat?.messages.length === 0) {
             throw new not_found_1.default(`You do not have any msg with this User`);
         }
+        // getIO().socketsJoin(`${chat?.id}`);
         res.status(http_status_codes_1.StatusCodes.OK).json({ chat: chat });
     }
     catch (error) { }

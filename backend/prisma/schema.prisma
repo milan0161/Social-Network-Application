@@ -50,13 +50,13 @@ model Chat{
 
 
 model Message{
-  id String @id @default(uuid())
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   content String
 
-  chat Chat @relation(fields: [chatId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
   chatId String
 
   sender     User   @relation(name: "sentMessages", fields: [senderId], references: [id])

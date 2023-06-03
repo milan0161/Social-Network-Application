@@ -3,12 +3,13 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { getIO } from '../utils/socket';
 import NotFoundError from '../errors/not-found';
-const prisma = new PrismaClient();
 
+const prisma = new PrismaClient();
 const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
   const senderId = req.userId;
   const recivierId = req.params.id;
   const { content } = req.body as { content: string };
+
   try {
     const findChat = await prisma.chat.findFirst({
       where: {
@@ -28,7 +29,10 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
           receiverId: recivierId,
         },
         select: {
+          chatId: true,
           content: true,
+          createdAt: true,
+          receiverId: true,
           sender: {
             select: {
               id: true,
@@ -40,38 +44,8 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
           id: true,
         },
       });
-      // const newMessage = await prisma.chat.update({
-      //   where: {
-      //     id: findChat.id,
-      //   },
-      //   data: {
-      //     messages: {
-      //       create: {
-      //         content: content,
-      //         senderId: senderId,
-      //         receiverId: recivierId,
-      //       },
-      //     },
-      //   },
-      //   select: {
-      //     messages: {
-      //       take: 1,
-      //       select: {
-      //         id: true,
-      //         sender: {
-      //           select: {
-      //             id: true,
-      //             firstname: true,
-      //             lastname: true,
-      //             mainImage: true,
-      //           },
-      //         },
-      //         content: true,
-      //       },
-      //     },
-      //   },
-      // });
-      getIO().emit('messages', {
+      const chatRoom = newMessage.receiverId.concat(newMessage.sender.id);
+      getIO().emit(`${chatRoom}`, {
         action: 'sent',
         message: newMessage,
       });
@@ -90,10 +64,13 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
           },
         },
         select: {
+          id: true,
           messages: {
             take: 1,
             select: {
               id: true,
+              createdAt: true,
+              receiverId: true,
               sender: {
                 select: {
                   id: true,
@@ -107,11 +84,15 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
           },
         },
       });
-
-      getIO().emit('messages', {
+      const chatRoom = newChat.messages[0].receiverId.concat(newChat.messages[0].sender.id);
+      getIO().emit(`${chatRoom}`, {
         action: 'sent',
         message: newChat.messages[0],
       });
+      // getIO().emit('messages', {
+      //   action: 'sent',
+      //   message: newChat.messages[0],
+      // });
     }
 
     res.status(StatusCodes.OK).json({ message: 'Message has been sent' });
@@ -135,6 +116,7 @@ const getChat = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
       select: {
+        id: true,
         messages: {
           select: {
             id: true,
@@ -158,12 +140,16 @@ const getChat = async (req: Request, res: Response, next: NextFunction) => {
     if (chat?.messages.length === 0) {
       throw new NotFoundError(`You do not have any msg with this User`);
     }
+
+    // getIO().socketsJoin(`${chat?.id}`);
+
     res.status(StatusCodes.OK).json({ chat: chat });
   } catch (error) {}
 };
 
 const getAllChats = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.userId;
+
   try {
     const userChats = await prisma.chat.findMany({
       where: {

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_1 = require("../controllers/auth");
 const express_validator_1 = require("express-validator");
+const isAuth_1 = require("../middleware/isAuth");
 const validation_middleware_1 = require("../middleware/validation-middleware");
 const router = (0, express_1.Router)();
 router.post('/register', [
@@ -20,4 +21,11 @@ router.post('/register', [
     (0, express_validator_1.body)('password').not().isEmpty().isString().isLength({ min: 5, max: 30 }).trim(),
 ], validation_middleware_1.validationMiddleware, auth_1.register);
 router.post('/login', [(0, express_validator_1.body)('email').isEmail().trim().withMessage('Please enter a valid email adress')], validation_middleware_1.validationMiddleware, auth_1.login);
+router.patch('/change-password', [
+    (0, express_validator_1.body)('newPassword')
+        .isString()
+        .trim()
+        .isLength({ min: 5, max: 30 })
+        .withMessage('Please enter a valid new password, min 3 - max 30 characters'),
+], isAuth_1.isAuth, validation_middleware_1.validationMiddleware, auth_1.changePassword);
 exports.default = router;

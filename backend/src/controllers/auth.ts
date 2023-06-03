@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Login, Register } from './types';
+import { ChangePassBody, Login, Register } from './types';
 import { PrismaClient } from '@prisma/client';
 import BadRequestError from '../errors/bad-request';
 import { hashPassword, verifyPassword } from '../utils/passwords';
@@ -26,6 +26,17 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
         lastname: lastname,
         email: email,
         password: hashedPw,
+        information: {
+          create: {
+            age: null,
+            city: null,
+            employed: null,
+            phoneNumber: null,
+            dateOfBirth: null,
+            placeOfBirth: null,
+            workPlace: null,
+          },
+        },
       },
     });
     res.status(StatusCodes.CREATED).json({ message: 'You have successfully registered, please log in to continue' });
@@ -67,5 +78,39 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.userId;
+  const { newPassword, oldPassword } = req.body as ChangePassBody;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        password: true,
+      },
+    });
+    if (!user) {
+      throw new NotFoundError('Could not find user, something went wrong, please try agian later');
+    }
+    const isVerify = await verifyPassword(oldPassword, user.password);
+    if (!isVerify) {
+      throw new BadRequestError('Password is incorrect');
+    }
+    const hashedNewPw = await hashPassword(newPassword);
 
-export { register, login };
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashedNewPw,
+      },
+    });
+    res.status(StatusCodes.OK).json({ message: 'Uspesno ste promenili password' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { register, login, changePassword };

@@ -1,6 +1,5 @@
 import React from 'react';
-import { SingleChatUser, SingleMessage } from '../../../features/messages/types';
-import { InitalUserState } from '../../../features/auth/types';
+import { SingleMessage } from '../../../features/messages/types';
 
 interface SingleMessagesProps {
   msg: SingleMessage;

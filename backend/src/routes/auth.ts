@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register } from '../controllers/auth';
+import { login, register, changePassword } from '../controllers/auth';
 import { body } from 'express-validator';
 import { isAuth } from '../middleware/isAuth';
 import { validationMiddleware } from '../middleware/validation-middleware';
@@ -30,6 +30,20 @@ router.post(
   [body('email').isEmail().trim().withMessage('Please enter a valid email adress')],
   validationMiddleware,
   login,
+);
+
+router.patch(
+  '/change-password',
+  [
+    body('newPassword')
+      .isString()
+      .trim()
+      .isLength({ min: 5, max: 30 })
+      .withMessage('Please enter a valid new password, min 3 - max 30 characters'),
+  ],
+  isAuth,
+  validationMiddleware,
+  changePassword,
 );
 
 export default router;

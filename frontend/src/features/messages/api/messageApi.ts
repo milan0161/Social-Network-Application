@@ -1,8 +1,8 @@
-import { useAppDispatch } from '../../../app/hooks';
 import { setAllChats } from '../messagesSlice';
 import { apiSlice } from '../../../app/api/apiSlice';
-import { AllChats, Chat, MessageReq, MessageRes, SingleChat } from '../types';
-import openSocket from 'socket.io-client';
+import { AllChats, Chat, MessageReq, MessageRes } from '../types';
+
+import { soket } from '../../../pages/ChatPage';
 
 const messageApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,34 +19,31 @@ const messageApiSlice = apiSlice.injectEndpoints({
         url: `/message/api/v1/chat/${id}`,
         method: 'GET',
       }),
-      async onCacheEntryAdded(arg, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) {
-        const soket = openSocket('http://localhost:7000');
+      async onCacheEntryAdded(arg, { updateCachedData, cacheDataLoaded, cacheEntryRemoved, getState }) {
         try {
           await cacheDataLoaded;
-          soket.on('messages', (data) => {
+
+          const state: any = getState();
+          const room = state.auth.user.id.concat(arg);
+          soket.on(`${room}`, (data) => {
             if (data.action === 'sent') {
               updateCachedData((draft) => {
                 draft.chat.messages.push(data.message);
+                console.log(draft.chat.messages);
               });
             }
           });
           await cacheEntryRemoved;
-          soket.off('messages');
+          soket.off(`${room}`);
         } catch (error) {}
       },
 
-      // providesTags: ['Messages'],
+      providesTags: ['Messages'],
     }),
     getAllChats: builder.query<AllChats, void>({
       query: () => ({
         url: '/message/api/v1/get-all-chats',
       }),
-      // transformResponse: (response: { allChats: SingleChat[] }, meta, arg): AllChats | Promise<AllChats> => {
-      //   if (response) {
-      //     dispatch(setAllChats({ allChats: response.allChats }));
-      //   }
-      //   return response;
-      // },
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const allChats = await queryFulfilled;

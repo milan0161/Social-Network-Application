@@ -13,9 +13,10 @@ import imagesRoutes from './routes/images';
 import messageRoutes from './routes/messages';
 import refreshRoute from './routes/refresh';
 import path from 'path';
-import * as socketio from 'socket.io';
 import { init } from './utils/socket';
 import { fileFilter, fileStorage } from './utils/configMulter';
+import { Socket } from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 //App Variables
 require('dotenv').config();
 const PORT = process.env.PORT;
@@ -55,8 +56,22 @@ const io = init(httpServer, 'http://localhost:3000');
 //     origin: 'http://localhost:3000',
 //   },
 // });
+
+// global.onlineUsers = new Map()
+
 io.on('connection', (socket) => {
   console.log('Client connected');
+
+  // socket.on('messageSent', (data) => {
+  //   console.log(data);
+  //   socket.join(data.to);
+  //   socket.to(data.to).emit('messages', {
+  //     content: data.message,
+  //   });
+  // });
+  socket.on('disconnect', () => {
+    console.log('Client disconected');
+  });
 });
 
 httpServer.listen(PORT, () => {

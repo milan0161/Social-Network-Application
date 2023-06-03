@@ -39,3 +39,8 @@ export interface Images {
   authorId: string;
   path: string;
 }
+
+export type ChangePassBody = {
+  oldPassword: string;
+  newPassword: string;
+};

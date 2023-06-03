@@ -29,7 +29,7 @@ const ChatList: React.FC = () => {
         // </ul>
       );
       if (parcipient.id === undefined) {
-        dispatch(setParcipient({ parcipient: chatList[0].users[0] }));
+        // dispatch(setParcipient({ parcipient: chatList[0].users[0] }));
       }
     }
   }

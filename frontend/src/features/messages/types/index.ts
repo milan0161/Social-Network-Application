@@ -31,6 +31,7 @@ export interface Chat {
   chat: Messages;
 }
 interface Messages {
+  id: string;
   messages: SingleMessage[];
 }
 

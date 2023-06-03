@@ -5,6 +5,7 @@ import { setIsAuth, setUser } from '../features/auth/authSlice';
 import { getAToken, getRToken } from '../utils/getTokens';
 import Header from '../components/navigation/Header';
 import decodeAToken from '../utils/decodeAToken';
+import { refreshTokens } from '../utils/refreshTokens';
 
 const Root: React.FunctionComponent = () => {
   const isAuth = useAppSelector((state) => state.auth.isAuth);
@@ -32,6 +33,7 @@ const Root: React.FunctionComponent = () => {
       // navigate('/');
     } else if (rToken) {
       dispatch(setIsAuth(true));
+      refreshTokens();
       // navigate('/');
     } else {
       navigate('/login');

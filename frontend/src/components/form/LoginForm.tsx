@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 // import classes from './LoginForm.module.css';
 import { Link, useNavigate, redirect } from 'react-router-dom';
 import { useLoginMutation } from '../../features/auth/api/authApiSlice';
@@ -8,7 +8,8 @@ import Loading from '../UI/Loading';
 import { saveTokens } from '../../utils/saveTokens';
 
 const LoginForm: React.FunctionComponent = () => {
-  const [onLogin, setLogin] = useState({ email: '', password: '' });
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useAppDispatch();
   const isAuth = useAppSelector((state) => state.api.queries);
@@ -16,24 +17,9 @@ const LoginForm: React.FunctionComponent = () => {
 
   const [login, { data, isLoading, isError, isSuccess, error }] = useLoginMutation();
 
-  const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLogin((prev) => {
-      return { email: e.target.value, password: prev.password };
-    });
-  };
-
-  const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLogin((prev) => {
-      return { email: prev.email, password: e.target.value };
-    });
-  };
-
   const loginHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login(onLogin);
-    setLogin((prev) => {
-      return { ...prev, email: '', password: '' };
-    });
+    login({ email: emailRef.current!.value, password: passwordRef.current!.value });
   };
 
   if (isLoading) {
@@ -52,16 +38,21 @@ const LoginForm: React.FunctionComponent = () => {
   return (
     <div className="forma_div mt-24">
       <h1 className="text-center">Please Log in to continue</h1>
-      {isError && <p style={{ color: 'red' }}>{error?.message}</p>}
+      {isError && (
+        <p className="text-center" style={{ color: 'red' }}>
+          {error?.message}
+        </p>
+      )}
       <form onSubmit={loginHandler} className="forma_user">
         <div className="w-full">
           <label className="block" htmlFor="email">
             Email
           </label>
           <input
+            ref={emailRef}
             className="w-full"
-            value={onLogin.email}
-            onChange={emailHandler}
+            // value={onLogin.email}
+            // onChange={emailHandler}
             type="email"
             id="email"
             placeholder="Email"
@@ -72,9 +63,10 @@ const LoginForm: React.FunctionComponent = () => {
             Password
           </label>
           <input
+            ref={passwordRef}
             className="w-full"
-            value={onLogin.password}
-            onChange={passwordHandler}
+            // value={onLogin.password}
+            // onChange={passwordHandler}
             type="password"
             id="password"
             placeholder="*********"

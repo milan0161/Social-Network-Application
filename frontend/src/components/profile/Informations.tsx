@@ -13,7 +13,6 @@ const Informations = () => {
     employedInfo = 'Currently not';
   }
   if (isSuccess) {
-    console.log(info.userInfo);
   }
   if (isLoading) {
     return <Loading />;

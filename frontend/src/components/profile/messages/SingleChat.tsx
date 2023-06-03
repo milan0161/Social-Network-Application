@@ -4,6 +4,7 @@ import { SingleChat as SchatProp } from '../../../features/messages/types';
 import { REACT_APP_BASE_URL } from '../../../api/axios/axios';
 import { useAppDispatch } from '../../../app/hooks';
 import { setParcipient } from '../../../features/messages/messagesSlice';
+import { soket } from '../../../pages/ChatPage';
 
 interface SingleChatProps<T> {
   chat: T;

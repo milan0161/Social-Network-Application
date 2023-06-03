@@ -12,7 +12,7 @@ interface PostProps {
 
 const SinglePost = ({ post }: PostProps) => {
   return (
-    <div className="border border-slate-300 w-3/4 mx-auto mt-8 rounded-lg">
+    <div className="border border-slate-300 w-1/2 mx-auto mt-8 rounded-lg ">
       <div className="w-full flex flex-col">
         <div className="flex flex-row px-2 my-2">
           {post.author.mainImage && (
@@ -33,9 +33,15 @@ const SinglePost = ({ post }: PostProps) => {
         </div>
         <PostDate date={post.createdAt} />
       </div>
-      <div className=" w-full  border-t-slate-300 border">
+      <div className=" w-full h-full 2xl:h-1/2 border-t-slate-300 border 2xl:pb-6">
         <p className="ml-4">{post.content}</p>
-        {post.image[0] && <img className="w-full" src={`${REACT_APP_BASE_URL}/${post.image[0].path}`} alt="dummy" />}
+        {post.image[0] && (
+          <img
+            className="w-full mx-auto h-full 2xl:w-1/2 2xl:h-full"
+            src={`${REACT_APP_BASE_URL}/${post.image[0].path}`}
+            alt="dummy"
+          />
+        )}
       </div>
       <PostComments postId={post.id} />
       {post.comments &&

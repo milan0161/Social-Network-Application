@@ -26,6 +26,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIO = exports.init = void 0;
 const socketio = __importStar(require("socket.io"));
 let io;
+// interface ServerToClientEvents {
+//   noArg: () => void;
+//   basicEmit: (a: number, b: string, c: Buffer) => void;
+//   withAck: (d: string, callback: (e: number) => void) => void;
+// }
+// interface ClientToServerEvents {
+//   hello: (data: string) => void;
+// }
+// interface InterServerEvents {
+//   ping: () => void;
+// }
+// interface SocketData {
+//   name: string;
+//   age: number;
+// }
+// let io = new socketio.Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>();
 let init = (httpServer, cors) => {
     io = new socketio.Server(httpServer, {
         cors: {

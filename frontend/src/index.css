@@ -46,10 +46,10 @@
     @apply flex justify-between xl:justify-evenly lg:justify-evenly 2xl:justify-evenly md:justify-evenly items-center  row-start-2 col-span-5 2xl:col-start-3 2xl:col-span-3 2xl:row-start-1 xl:col-start-3 xl:col-span-3 xl:row-start-1 lg:col-start-3 lg:col-span-3 lg:row-start-1;
   }
   .nav_link {
-    @apply text-sm  sm:text-lg text-green-700 hover:text-light_purple1 transition font-bold scale-110;
+    @apply text-sm  sm:text-xl text-green-700 hover:text-light_purple1 transition font-bold scale-110;
   }
   .nav_active {
-    @apply text-sm sm:text-lg text-dark_purple hover:text-light_purple1 transition font-bold;
+    @apply text-sm sm:text-xl text-dark_purple hover:text-light_purple1 transition font-bold;
   }
   .profile_nav {
     @apply text-sm  sm:text-lg text-green-700 hover:text-light_purple1 transition font-bold scale-110;

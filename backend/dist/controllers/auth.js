@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.register = void 0;
+exports.changePassword = exports.login = exports.register = void 0;
 const client_1 = require("@prisma/client");
 const bad_request_1 = __importDefault(require("../errors/bad-request"));
 const passwords_1 = require("../utils/passwords");
@@ -29,6 +29,17 @@ const register = async (req, res, next) => {
                 lastname: lastname,
                 email: email,
                 password: hashedPw,
+                information: {
+                    create: {
+                        age: null,
+                        city: null,
+                        employed: null,
+                        phoneNumber: null,
+                        dateOfBirth: null,
+                        placeOfBirth: null,
+                        workPlace: null,
+                    },
+                },
             },
         });
         res.status(http_status_codes_1.StatusCodes.CREATED).json({ message: 'You have successfully registered, please log in to continue' });
@@ -73,3 +84,38 @@ const login = async (req, res, next) => {
     }
 };
 exports.login = login;
+const changePassword = async (req, res, next) => {
+    const userId = req.userId;
+    const { newPassword, oldPassword } = req.body;
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: {
+                password: true,
+            },
+        });
+        if (!user) {
+            throw new not_found_1.default('Could not find user, something went wrong, please try agian later');
+        }
+        const isVerify = await (0, passwords_1.verifyPassword)(oldPassword, user.password);
+        if (!isVerify) {
+            throw new bad_request_1.default('Password is incorrect');
+        }
+        const hashedNewPw = await (0, passwords_1.hashPassword)(newPassword);
+        await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                password: hashedNewPw,
+            },
+        });
+        res.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Uspesno ste promenili password' });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.changePassword = changePassword;

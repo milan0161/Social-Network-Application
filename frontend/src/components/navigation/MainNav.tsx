@@ -32,11 +32,11 @@ export const MainNav: React.FunctionComponent = () => {
             Discover
           </NavLink>
         </li>
-        <li>
+        {/* <li>
           <NavLink className={({ isActive }) => (isActive ? 'nav_link' : 'nav_active')} to={`profile/${user.id}`} end>
             {user.firstname}
           </NavLink>
-        </li>
+        </li> */}
         <li>
           <NavLink className={({ isActive }) => (isActive ? 'nav_link' : 'nav_active')} to={'messages'}>
             Chats

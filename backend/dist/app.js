@@ -51,8 +51,19 @@ const io = (0, socket_1.init)(httpServer, 'http://localhost:3000');
 //     origin: 'http://localhost:3000',
 //   },
 // });
+// global.onlineUsers = new Map()
 io.on('connection', (socket) => {
     console.log('Client connected');
+    // socket.on('messageSent', (data) => {
+    //   console.log(data);
+    //   socket.join(data.to);
+    //   socket.to(data.to).emit('messages', {
+    //     content: data.message,
+    //   });
+    // });
+    socket.on('disconnect', () => {
+        console.log('Client disconected');
+    });
 });
 httpServer.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}...`);
